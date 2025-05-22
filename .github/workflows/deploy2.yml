@@ -1,0 +1,31 @@
+name: Conection to SSH
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+      - name: Copiar archivo a EC2 por SSH
+        uses: appleboy/scp-action@v0.1.7
+        with: 
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.AWS_ACCESS_PEM }}
+          source: "database.sql"
+          target: "~/"
+
+      - name: SSH into EC2 and deploy container
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.AWS_ACCESS_PEM }}
+        script: |
+          docker cp /home/${{ secrets.EC2_USER }}/database.sql postgresql-dev:/tmp/database.sql
+          docker exec -i postgresql-dev psql -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f /tmp/database.sql
