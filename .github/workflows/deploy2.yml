@@ -26,6 +26,6 @@ jobs:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.AWS_ACCESS_PEM }}
-        script: |
-          docker cp /home/${{ secrets.EC2_USER }}/database.sql postgresql-dev:/tmp/database.sql
-          docker exec -i postgresql-dev psql -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f /tmp/database.sql
+          script: |
+            docker cp /home/${{ secrets.EC2_USER }}/database.sql postgresql-dev:/tmp/database.sql
+            docker exec -i postgresql-dev psql -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f /tmp/database.sql
